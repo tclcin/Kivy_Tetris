@@ -13,16 +13,16 @@ class MainApp(App):
     game = ObjectProperty(None)
 
     def build(self):
-        self.game = GameScreen()
+        self.game = GameBox()
         return self.game
 
 
-class GameScreen(BoxLayout):
+class GameBox(BoxLayout):
     board = ObjectProperty(None)
     sidebar = ObjectProperty(None)
 
     def __init__(self, **kwargs):
-        super(GameScreen, self).__init__(**kwargs)
+        super(GameBox, self).__init__(**kwargs)
         self.game_state = GameState()
         self.board.set_game_state(self.game_state)
         self.sidebar.set_game_state(self.game_state)
