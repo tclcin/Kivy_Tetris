@@ -239,7 +239,7 @@ class GameState:
         for i in range(0, lines):
             self.grid.insert(0, [BlockColor.EMPTY] * GRID_WIDTH)
         self.score += [0, 40, 100, 300, 1200][lines] * (self.level + 1)
-        self.level = self.lines_cleared // 10
+        self.level = self.lines_cleared // 5
 
     def do_game_over(self):
         self.status = GameStatus.GAME_OVER

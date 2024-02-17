@@ -9,7 +9,8 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.button import Button
 from game import *
 from kivy.lang import Builder
-
+from kivy.uix.label import Label 
+from kivy.uix.slider import Slider
 
 class GameScreen(Screen):
     def __init__(self,**kwargs):
@@ -17,31 +18,34 @@ class GameScreen(Screen):
         layout = GameBox()
         self.add_widget(layout)     # lindo                  
 
-class MenuScreen(Screen):
-    def __init__(self,**kwargs):
-        super(MenuScreen, self).__init__(**kwargs)    
-        menu_layout = BoxLayout(Orientation = 'vertical')
-        self.add_widget(menu_layout)
-        top_buttons=BoxLayout()
-        menu_layout.add_widget(top_buttons) 
-        menu_layout.add_widget(Button(text='Save'))
 
 class MainApp(App):
-    global sm 
+    global sm
     sm = ScreenManager()
     def build(self):
         sm.add_widget(Builder.load_file('ss.kv'))
+        sm.add_widget(Builder.load_file('ms.kv'))
         sm.add_widget(GameScreen(name='game'))
 
         sm.current = 'ss'
         return sm
     
     def on_start(self):
-        Clock.schedule_once(self.change_screen, 1)
+        Clock.schedule_once(self.change_to_menu, 2)
 
-    def change_screen(self, dt):
+    def change_to_menu(self, dt):
+        sm.current = 'ms'
+
+
+
+
+
+class MenuScreen(Screen):
+    def __init__(self, **kwargs):
+        super(MenuScreen, self).__init__(**kwargs)
+        diff_slider = Slider(min=0, max=3)
+    def change_to_game(self):
         sm.current = 'game'
-
 
 class GameBox(BoxLayout):
     board = ObjectProperty(None)

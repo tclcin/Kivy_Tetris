@@ -1,0 +1,26 @@
+MenuScreen:
+    name: "ms"
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        stretch: True
+
+        Label:
+            text: "MENU"
+            font_size: 128
+            
+        Slider:
+            id: slider
+            min: 0
+            max: 3
+            step: 1
+            orientation: 'horizontal'
+
+        Label:
+            text: str(slider.value)
+
+        Button:
+            text: "J O G A R"
+            font_size: 32
+            on_release: root.change_to_game()
+            
