@@ -31,7 +31,7 @@ class MainApp(App):
         return sm
     
     def on_start(self):
-        Clock.schedule_once(self.change_to_menu, 2)
+        Clock.schedule_once(self.change_to_menu, 4)
 
     def change_to_menu(self, dt):
         sm.current = 'ms'
