@@ -68,7 +68,7 @@ class GameBox(BoxLayout):
     def tick(self, *args):
         if not self.game_state.is_game_over():
             self.game_state.tick()
-            delay = max(10 - self.game_state.level, 1) * .05
+            delay = max(10 - self.game_state.level, 1) * .07
             Clock.schedule_once(self.tick, delay)
         self.redraw()
 
