@@ -11,16 +11,16 @@ from game import *
 from kivy.lang import Builder
 from kivy.uix.label import Label 
 from kivy.uix.slider import Slider
-
+#
 class GameScreen(Screen):
     def __init__(self,**kwargs):
         super(GameScreen, self).__init__(**kwargs)          
         layout = GameBox()
         self.add_widget(layout)     # lindo                  
-
+#
 
 class MainApp(App):
-    global sm
+    global sm                                     #
     sm = ScreenManager()
     def build(self):
         sm.add_widget(Builder.load_file('ss.kv'))
@@ -34,16 +34,23 @@ class MainApp(App):
         Clock.schedule_once(self.change_to_menu, 4)
 
     def change_to_menu(self, dt):
-        sm.current = 'ms'
+        sm.current = 'ms'                            #
 
-class MenuScreen(Screen):
+class MenuScreen(Screen):                              #
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
         diff_slider = Slider(min=0, max=3)
+        if diff_slider == 1:
+            self.level = 1
+        elif diff_slider == 2:
+            self.level = 5
+        elif diff_slider == 3:
+            self.level = 10 
+
     def change_to_game(self):
         sm.current = 'game'
 
-class GameBox(BoxLayout):
+class GameBox(BoxLayout):                           #
     board = ObjectProperty(None)
     sidebar = ObjectProperty(None)
 
