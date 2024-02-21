@@ -11,46 +11,46 @@ from game import *
 from kivy.lang import Builder
 from kivy.uix.label import Label 
 from kivy.uix.slider import Slider
-#
-class GameScreen(Screen):
+
+### Comentários descrevem adições ou alterações sobre o código original
+
+class GameScreen(Screen): # janela onde o jogo em si acontece
     def __init__(self,**kwargs):
         super(GameScreen, self).__init__(**kwargs)          
         layout = GameBox()
-        self.add_widget(layout)     # lindo                  
-#
+        self.add_widget(layout)                      
 
-class MainApp(App):
-    global sm                                     #
-    sm = ScreenManager()
-    def build(self):
-        sm.add_widget(Builder.load_file('ss.kv'))
-        sm.add_widget(Builder.load_file('ms.kv'))
-        sm.add_widget(GameScreen(name='game'))
+class MenuScreen(Screen): # Tela de Menu do jogo                     
+   pass
 
-        sm.current = 'ss'
-        return sm
-    
-    def on_start(self):
-        Clock.schedule_once(self.change_to_menu, 4)
+class SplashScreen(Screen): # Splash Screen 
+    pass
+
+class AppManager(ScreenManager): # Gerenciador de janelas por trás do app
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    def change_to_game(self):
+        self.current = 'game'
 
     def change_to_menu(self, dt):
-        sm.current = 'ms'                            #
+        self.current = 'ms'
+    pass
+      
 
-class MenuScreen(Screen):                              #
+class MainApp(App): # definição do loop principal do app
     def __init__(self, **kwargs):
-        super(MenuScreen, self).__init__(**kwargs)
-        diff_slider = Slider(min=0, max=3)
-        if diff_slider == 1:
-            self.level = 1
-        elif diff_slider == 2:
-            self.level = 5
-        elif diff_slider == 3:
-            self.level = 10 
+        super().__init__(**kwargs)
+        self.sm = Builder.load_file('actual_main.kv')
+    def build(self):
+        self.sm.add_widget(GameScreen(name='game'))
+        return self.sm
+    
+    def on_start(self):
+        Clock.schedule_once(self.sm.change_to_menu, 4)
 
-    def change_to_game(self):
-        sm.current = 'game'
 
-class GameBox(BoxLayout):                           #
+
+class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para melhor refletir o que a classe representa                    
     board = ObjectProperty(None)
     sidebar = ObjectProperty(None)
 
@@ -179,7 +179,7 @@ class Board(Widget):
 
 
 class Sidebar(BoxLayout):
-    score = ObjectProperty(None)
+    score = ObjectProperty()
     level = ObjectProperty(None)
     lines_cleared = ObjectProperty(None)
     next_piece = ObjectProperty(None)
