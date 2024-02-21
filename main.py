@@ -71,7 +71,7 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
     def tick(self, *args):
         if not self.game_state.is_game_over():
             self.game_state.tick()
-            delay = max(10 - self.game_state.level, 1) * .05
+            delay = max(10 - self.game_state.level, 1) * .03
             Clock.schedule_once(self.tick, delay)
         self.redraw()
 
