@@ -40,7 +40,7 @@ class AppManager(ScreenManager): # Gerenciador de janelas por trás do app
 class MainApp(App): # definição do loop principal do app
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.sm = Builder.load_file('actual_main.kv')
+        self.sm = Builder.load_file('janelas.kv')
     def build(self):
         self.sm.add_widget(GameScreen(name='game'))
         return self.sm
