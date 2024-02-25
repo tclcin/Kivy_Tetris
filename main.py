@@ -15,10 +15,14 @@ from kivy.uix.slider import Slider
 ### Comentários descrevem adições ou alterações sobre o código original
 
 class GameScreen(Screen): # janela onde o jogo em si acontece
-    def __init__(self,**kwargs):
+    def __init__(self, diff,**kwargs):
         super(GameScreen, self).__init__(**kwargs)          
-        layout = GameBox()
-        self.add_widget(layout)                      
+        try:
+            self.diff = diff
+            gamebox = GameBox(dificuldade=self.diff)
+            self.add_widget(gamebox)
+        except:
+            pass                   
 
 class MenuScreen(Screen): # Tela de Menu do jogo                     
    pass
@@ -31,10 +35,13 @@ class AppManager(ScreenManager): # Gerenciador de janelas por trás do app
         super().__init__(**kwargs)
     def change_to_game(self):
         self.current = 'game'
+    
+    def create_gamescreen(self, dificuldade):
+        self.add_widget(GameScreen(name='game', diff=dificuldade))
+        self.change_to_game()
 
     def change_to_menu(self, dt):
         self.current = 'ms'
-    pass
       
 
 class MainApp(App): # definição do loop principal do app
@@ -42,7 +49,6 @@ class MainApp(App): # definição do loop principal do app
         super().__init__(**kwargs)
         self.sm = Builder.load_file('janelas.kv')
     def build(self):
-        self.sm.add_widget(GameScreen(name='game'))
         return self.sm
     
     def on_start(self):
@@ -54,13 +60,14 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
     board = ObjectProperty(None)
     sidebar = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, dificuldade, **kwargs):
         super(GameBox, self).__init__(**kwargs)
         self.game_state = GameState()
         self.board.set_game_state(self.game_state)
         self.sidebar.set_game_state(self.game_state)
         self.bind(pos=self.redraw)
         self.bind(size=self.redraw)
+        self.diff = dificuldade
 
     def start_game(self, *args):
         Clock.unschedule(self.tick)
@@ -71,7 +78,7 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
     def tick(self, *args):
         if not self.game_state.is_game_over():
             self.game_state.tick()
-            delay = max(10 - self.game_state.level, 1) * .03
+            delay = max(10 - (1+(self.game_state.level))*self.diff, 1) * .05
             Clock.schedule_once(self.tick, delay)
         self.redraw()
 
