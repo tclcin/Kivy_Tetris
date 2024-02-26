@@ -173,6 +173,7 @@ class Board(Widget):
         soundloader = SoundLoader()
         sound = soundloader.load(f'./assets/sounds/{event}.wav')
         if sound:
+            sound.volume = 0.3
             sound.play()
 
     def redraw(self, *args):
