@@ -2,8 +2,8 @@ AppManager:
   SplashScreen:
     name: "ss"
     FloatLayout:
-      Image:
-        source: 'tertis.jpg'
+      Image: 
+        source: './assets/imgs/tertis.jpg'
         allow_stretch: True
         anim_delay:0
         anim_reset: True
@@ -32,7 +32,7 @@ AppManager:
       Slider:
         id: slider
         min: 0
-        max: 3
+        max: 10
         step: 1
         orientation: 'horizontal'
 
@@ -44,5 +44,8 @@ AppManager:
         text: "J O G A R"
         font_size: 32
         font_name: "Tetris"
-        on_release: root.change_to_game()
+        on_release: root.create_gamescreen(slider.value)
+
+        
+    
   
