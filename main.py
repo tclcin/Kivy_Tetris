@@ -11,18 +11,19 @@ from game import *
 from kivy.lang import Builder
 from kivy.uix.label import Label 
 from kivy.uix.slider import Slider
+from kivy.core.audio import SoundLoader
 
 ### Comentários descrevem adições ou alterações sobre o código original
 
 class GameScreen(Screen): # janela onde o jogo em si acontece
     def __init__(self, diff,**kwargs):
-        super(GameScreen, self).__init__(**kwargs)          
-        try:
-            self.diff = diff
-            gamebox = GameBox(dificuldade=self.diff)
-            self.add_widget(gamebox)
-        except:
-            pass                   
+        super(GameScreen, self).__init__(**kwargs)         
+        
+        self.diff = diff
+        gamebox = GameBox(dificuldade=self.diff)
+        self.add_widget(gamebox)
+        
+                
 
 class MenuScreen(Screen): # Tela de Menu do jogo                     
    pass
@@ -33,6 +34,10 @@ class SplashScreen(Screen): # Splash Screen
 class AppManager(ScreenManager): # Gerenciador de janelas por trás do app
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+   
+    def change_to_menu(self, dt):
+        self.current = 'ms'
+   
     def change_to_game(self):
         self.current = 'game'
     
@@ -40,8 +45,6 @@ class AppManager(ScreenManager): # Gerenciador de janelas por trás do app
         self.add_widget(GameScreen(name='game', diff=dificuldade))
         self.change_to_game()
 
-    def change_to_menu(self, dt):
-        self.current = 'ms'
       
 
 class MainApp(App): # definição do loop principal do app
@@ -56,9 +59,11 @@ class MainApp(App): # definição do loop principal do app
 
 
 
+
 class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para melhor refletir o que a classe representa                    
     board = ObjectProperty(None)
     sidebar = ObjectProperty(None)
+
 
     def __init__(self, dificuldade, **kwargs):
         super(GameBox, self).__init__(**kwargs)
@@ -68,6 +73,11 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
         self.bind(pos=self.redraw)
         self.bind(size=self.redraw)
         self.diff = dificuldade
+        self.musicloader = MusicLoader()
+        self.music = self.musicloader.choose_music(self.diff)
+        self.music.loop = True
+        self.music.volume = 0.3
+        self.music.play()
 
     def start_game(self, *args):
         Clock.unschedule(self.tick)
@@ -80,6 +90,8 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
             self.game_state.tick()
             delay = max(10 - (1+(self.game_state.level))*self.diff, 1) * .05
             Clock.schedule_once(self.tick, delay)
+        else:
+            self.music.stop()
         self.redraw()
 
     def redraw(self, *args):
@@ -105,6 +117,24 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
         block_width = board_width / GRID_WIDTH - 1
         block_height = board_height / (GRID_HEIGHT - 2) - 1
         return block_width, block_height
+
+
+class MusicLoader(SoundLoader):
+    def __init__(self) -> None:
+        super().__init__()
+
+
+    def choose_music(self, diff):
+        if diff <= 2:
+            music = self.load("./assets/music/easytheme.mp3")
+        elif 3 <= diff <= 6:
+            music = self.load("./assets/music/medio-theme.mp3")
+        elif 7 <= diff <= 9:
+            music = self.load("./assets/music/hard-7-9-theme.mp3")
+        else:
+            music = self.load("./assets/music/lvl-10-theme.mp3")
+        
+        return music
 
 
 class Board(Widget):
@@ -138,6 +168,12 @@ class Board(Widget):
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
+
+    def play_sound(self, event):
+        soundloader = SoundLoader()
+        sound = soundloader.load(f'./assets/sounds/{event}.wav')
+        if sound:
+            sound.play()
 
     def redraw(self, *args):
         self.canvas.before.clear()
@@ -179,6 +215,7 @@ class Board(Widget):
                           size=(block_width, block_height))
 
         if self.game_state.status == GameStatus.GAME_OVER:
+            self.play_sound('gameover')
             with self.canvas:
                 Color(0, 0, 0, 0.5)
                 Rectangle(pos=(board_x, board_y),
@@ -243,6 +280,7 @@ class Sidebar(BoxLayout):
                 Rectangle(pos=(x + col * (block_width + 1),
                                y + (2 - row) * (block_height + 1)),
                           size=(block_width, block_height))
+
 
 
 if __name__ == '__main__':
