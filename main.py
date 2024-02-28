@@ -73,30 +73,38 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
         self.bind(pos=self.redraw)
         self.bind(size=self.redraw)
         self.diff = dificuldade
+        self.collision_sfx_count = 0
+        self.sound_fx_player = SoundEffectLoader()
         self.musicloader = MusicLoader()
         self.music = self.musicloader.choose_music(self.diff)
         self.music.loop = True
         self.music.volume = 0.3
-        self.music.play()
+        
 
     def start_game(self, *args):
         Clock.unschedule(self.tick)
+        self.music.play()
         self.game_state.reset()
         self.game_state.start()
         self.tick()
+        self.collision_sfx_count = 0 
 
     def tick(self, *args):
         if not self.game_state.is_game_over():
             self.game_state.tick()
-            delay = max(10 - (1+(self.game_state.level))*self.diff, 1) * .05
+            delay = max(10 - (self.diff+self.game_state.level), 1) * .05
             Clock.schedule_once(self.tick, delay)
         else:
             self.music.stop()
+        if self.collisions_difference_calc():
+            self.sound_fx_player.choose_sound_effect('fall').play()
+            self.collision_sfx_count += 1
         self.redraw()
 
     def redraw(self, *args):
         self.sidebar.refresh(self.game_state)
         self.board.redraw()
+        
 
     def calculate_board_size(self):
         height = self.board.height - 20
@@ -118,6 +126,12 @@ class GameBox(BoxLayout): ## Mudança de nome de GameScreen para GameBox para me
         block_height = board_height / (GRID_HEIGHT - 2) - 1
         return block_width, block_height
 
+    def collisions_difference_calc(self):
+        if abs(self.collision_sfx_count - self.game_state.collisions) > 0:    
+         return True
+        else:
+            return False
+        
 
 class MusicLoader(SoundLoader):
     def __init__(self) -> None:
@@ -136,6 +150,14 @@ class MusicLoader(SoundLoader):
         
         return music
 
+class SoundEffectLoader(SoundLoader):
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def choose_sound_effect(self, event):
+        sound_fx = self.load(f'./assets/sounds/{event}.wav')
+        if sound_fx:
+            return sound_fx
 
 class Board(Widget):
     def __init__(self, **kwargs):
@@ -145,6 +167,7 @@ class Board(Widget):
         self.bind(pos=self.redraw)
         self.bind(size=self.redraw)
         self.game_state = None
+        self.sound_fx_player = SoundEffectLoader()
 
     def set_game_state(self, game_state):
         self.game_state = game_state
@@ -164,16 +187,13 @@ class Board(Widget):
         elif keycode[1] == "up":
             self.game_state.rotate()
         self.redraw()
+        
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
 
-    def play_sound(self, event):
-        soundloader = SoundLoader()
-        sound = soundloader.load(f'./assets/sounds/{event}.wav')
-        if sound:
-            sound.play()
+
 
     def redraw(self, *args):
         self.canvas.before.clear()
@@ -215,12 +235,12 @@ class Board(Widget):
                           size=(block_width, block_height))
 
         if self.game_state.status == GameStatus.GAME_OVER:
-            self.play_sound('gameover')
+            self.sound_fx_player.choose_sound_effect("gameover").play()
             with self.canvas:
                 Color(0, 0, 0, 0.5)
                 Rectangle(pos=(board_x, board_y),
                           size=(board_width, board_height))
-
+        
 
 class Sidebar(BoxLayout):
     score = ObjectProperty()
@@ -247,7 +267,7 @@ class Sidebar(BoxLayout):
             self.start_button.disabled = True
         else:
             self.start_button.disabled = False
-
+       
     def render_next_piece(self):
         next_piece = self.next_piece
         next_piece.canvas.before.clear()
@@ -266,6 +286,7 @@ class Sidebar(BoxLayout):
         x = next_piece.x + (next_piece.width - width) / 2
         y = next_piece.y + next_piece.height - height
 
+
         with next_piece.canvas.before:
             Color(0.5, 0.5, 0.5, 1)
             Line(width=2., rectangle=(x - 2, y - 2, width + 4, height + 4))
@@ -280,6 +301,8 @@ class Sidebar(BoxLayout):
                 Rectangle(pos=(x + col * (block_width + 1),
                                y + (2 - row) * (block_height + 1)),
                           size=(block_width, block_height))
+        
+
 
 
 
