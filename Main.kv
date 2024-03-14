@@ -1,4 +1,4 @@
-<GameScreen>
+<GameBox>:
     board: board_id
     sidebar: sidebar_id
     orientation: 'horizontal'
@@ -10,6 +10,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
 
     Board:
         id: board_id
@@ -28,36 +29,43 @@
         Label:
             bold: True
             text: 'Score'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Label:
             id: score_id
             text: '0'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Label:
             bold: True
             text: 'Level'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Label:
             id: level_id
             text: '0'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Label:
             bold: True
             text: 'Lines Cleared'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Label:
             id: lines_cleared_id
             text: '0'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Label:
             bold: True
             text: 'Next'
+            font_name: "Tetris"
             size_hint_y: 1
 
         Widget:
@@ -69,4 +77,5 @@
             background_color: (0, .5, 1.5, 1)
             on_press: root.start_game()
             text: 'Start'
-            size_hint_y: 2
+            font_name: "Tetris"
+            size_hint_y: 2 

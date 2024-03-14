@@ -1,0 +1,33 @@
+Screen:
+    name: "ms"
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        stretch: True
+
+        Label:
+            text: "MENU"
+            font_size: 128
+            font_name: "Tetris"
+        Label: 
+            text: "Dificuldade >: )"
+            font_size: 32
+            font_name: "Tetris"
+            
+        Slider:
+            id: slider
+            min: 0
+            max: 3
+            step: 1
+            orientation: 'horizontal'
+
+        Label:
+            text: str(slider.value)
+            font_name: "Tetris"
+
+        Button:
+            text: "J O G A R"
+            font_size: 32
+            font_name: "Tetris"
+            on_release: root.change_to_game()
+            
